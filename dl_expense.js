@@ -30,40 +30,46 @@
       Formats the value, "val", as U.S. currency.
       
 */
-
+// This runs an anonymous function on load.
 window.addEventListener("load", function () {
+    // establishes a var that gets all the input tags in the travelEXP table that has the sum class.
     var changingCells = document.querySelectorAll("table#travelExp input.sum");
+    // loops through the sum cells and iterates by 1
     for (var i = 0; i < changingCells.length; i++) {
-        changingCells[i].addEventListener("change", calcExp());
+        // adds an event listener to each sum cell to run the calc function on change.
+        changingCells[i].addEventListener("change", calcExp);
     }
-    document.getElementById("submitButton").addEventListener("click", validateSummary);
+    // This runs the validateSummary function on click.
+    document.getElementById("submitButton").onclick = validateSummary;
 });
-
+// This function checks to see if the textarea with the id of summary is empty and if it is then it pops up a custom validation message. 
 function validateSummary() {
-    if (document.getElementById("summary").validity.valueMissing) {
-        document.getElementById("summary").setCustomValidity("You must include a summary of the trip in your report");
+    var summary = document.getElementById("summary");
+    if (summary.validity.valueMissing) {
+        summary.setCustomValidity("You must include a summary of the trip in your report");
     } else {
-        document.getElementById("summary").setCustomValidity("");
+        summary.setCustomValidity("");
     }
 }
-
+// This function returns the total cost and does it by getting the sum class and loops through each field that displays a sum and adds an items value to it while ignoring the values that are not numbers.
 function calcClass(sumClass) {
     var sumFields = document.getElementsByClassName(sumClass);
     var sumTotal = 0;
     for (var i = 0; i < sumFields.length; i++) {
-        var itemValue = parseFloat(sumFields[i]);
-        if (isNaN(itemValue) === false) {
+        var itemValue = parseFloat(sumFields[i].value);
+        if (!isNaN(itemValue)) {
             sumTotal += itemValue
         }
     }
-    return sumTotal
+    return sumTotal;
 }
-
+// This function gets all the table rows in the travelExp table and loops throght them while obtaining the value and using the provided function to format them into a dollar amount (2 decimal places).
 function calcExp() {
     var expTable = document.querySelectorAll("table#travelExp tbody tr");
     for (var i = 0; i < expTable.length; i++) {
-        document.getElementById("subtotal" + i).value = formatNumber(calcClass("date" + i), 2);
+        expTable[i].querySelector("input#subtotal" + i).value = formatNumber(calcClass("date" + i), 2);
     }
+    // This formats each input value as the user types it in to the site.
     document.getElementById("transTotal").value = formatNumber(calcClass("trans"), 2);
     document.getElementById("lodgeTotal").value = formatNumber(calcClass("lodge"), 2);
     document.getElementById("mealTotal").value = formatNumber(calcClass("meal"), 2);
@@ -71,6 +77,7 @@ function calcExp() {
     document.getElementById("expTotal").value = formatUSCurrency(calcClass("sum"));
 }
 
+// provided functions
 function formatNumber(val, decimals) {
     return val.toLocaleString(undefined, {
         minimumFractionDigits: decimals,
